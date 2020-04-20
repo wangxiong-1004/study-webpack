@@ -1,6 +1,7 @@
 const path = require('path');
 const glob = require('glob');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 
 function resolve(dir) {
   return path.resolve(__dirname, dir);
@@ -86,5 +87,7 @@ module.exports = {
     contentBase: './dist'
   },
 
-  plugins: [].concat(htmlWebpackPlugins)
+  plugins: [new FriendlyErrorsWebpackPlugin()].concat(htmlWebpackPlugins),
+
+  stats: 'errors-only'
 };
