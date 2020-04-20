@@ -1,17 +1,59 @@
 const path = require('path');
+const glob = require('glob');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 function resolve(dir) {
   return path.resolve(__dirname, dir);
 }
 
+const setMPA = () => {
+  const entry = {};
+  const htmlWebpackPlugins = [];
+
+  const entryFiles = glob.sync(resolve('./src/*/index.js'));
+
+  Object.keys(entryFiles).map((index) => {
+    const entryFile = entryFiles[index];
+    // '/Users/wangxiong/Documents/web/web-study/webpack/webpack-init/src/index/index.js'
+
+    const match = entryFile.match(/src\/(.*)\/index\.js/);
+    const pageName = match && match[1];
+    entry[pageName] = entryFile;
+
+    htmlWebpackPlugins.push(
+      new HtmlWebpackPlugin({
+        template: path.join(__dirname, `src/${pageName}/index.html`),
+        filename: `${pageName}.html`,
+        chunks: [pageName],
+        inject: true,
+        minify: {
+          html5: true,
+          collapseWhitespace: true,
+          preserveLineBreaks: false,
+          minifyCSS: true,
+          minifyJS: true,
+          removeComments: true
+        }
+      })
+    );
+  });
+
+  return {
+    entry,
+    htmlWebpackPlugins
+  };
+};
+
+const { entry, htmlWebpackPlugins } = setMPA();
+
 module.exports = {
   mode: 'development',
 
-  entry: './src/index.js',
+  entry,
 
   output: {
     path: resolve('dist'),
-    filename: 'bundle.js'
+    filename: '[name].js'
   },
 
   module: {
@@ -42,15 +84,7 @@ module.exports = {
   devServer: {
     hot: true,
     contentBase: './dist'
-  }
+  },
 
-  // watch: true,
-  // watchOptions: {
-  //   // 默认为空,不监听的文件或者文件夹,支持正则匹配
-  //   ignored: /node_modules/,
-  //   // 监听到变化发生后等300ms再去执行,默认300ms
-  //   aggregateTimeout: 300,
-  //   // 判断文件是否发生变化是通过不停询问系统指定文件有没有变化实现的,默认每秒问1000次
-  //   poll: 1000
-  // }
+  plugins: [].concat(htmlWebpackPlugins)
 };
