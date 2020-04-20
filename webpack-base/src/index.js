@@ -4,4 +4,4 @@ const showName = (name) => {
   return name;
 };
 
-console.log(showName('webpack'));
+console.log(showName('webpack-dev-server'));

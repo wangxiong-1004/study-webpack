@@ -1,6 +1,8 @@
 # webpack-base
 
-- webpack 资源解析
+- watch
+- webpack-dev-server
+- webpack-dev-middware
 
 ## 文档
 
